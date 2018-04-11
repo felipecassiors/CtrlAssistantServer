@@ -1,7 +1,15 @@
-
-#include <SPI.h>         // needed for Arduino versions later than 0018
+#include <SPI.h>
+#include <MFRC522.h>
 #include <Ethernet.h>
 #include <EthernetUdp.h>         // UDP library from: bjoern@cs.stanford.edu 12/30/2008
+
+#define SS_PIN 9
+#define RST_PIN 8
+MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance.
+ 
+char st[20];
+ 
+// Ethernet
 
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network:
@@ -25,9 +33,18 @@ void setup() {
   Udp.begin(localPort);
 
   Serial.begin(9600);
+  
+  // RFID
+  SPI.begin();    // Inicia  SPI bus
+  mfrc522.PCD_Init(); // Inicia MFRC522
+  Serial.println("Aproxime o seu cartao do leitor...");
+  Serial.println();
 }
-
-void loop() {
+ 
+void loop() 
+{
+  // Início do código Ethernet
+   
   // if there's data available, read a packet
   int packetSize = Udp.parsePacket();
   if (packetSize) {
@@ -55,4 +72,44 @@ void loop() {
     Udp.endPacket();
   }
   delay(10);
-}
+  
+  // Início do código RFID
+  
+  // Look for new cards
+  if ( ! mfrc522.PICC_IsNewCardPresent()) 
+  {
+    return;
+  }
+  // Select one of the cards
+  if ( ! mfrc522.PICC_ReadCardSerial()) 
+  {
+    return;
+  }
+  //Mostra UID na serial
+  Serial.print("UID da tag :");
+  String conteudo= "";
+  byte letra;
+  for (byte i = 0; i < mfrc522.uid.size; i++) 
+  {
+     Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
+     Serial.print(mfrc522.uid.uidByte[i], HEX);
+     conteudo.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
+     conteudo.concat(String(mfrc522.uid.uidByte[i], HEX));
+  }
+  Serial.println();
+  Serial.print("Mensagem : ");
+  conteudo.toUpperCase();
+  if (conteudo.substring(1) == "ED 78 03 CA") //UID 1 - Chaveiro
+  {
+    Serial.println("Ola FILIPEFLOP !");
+    Serial.println();
+    delay(3000);
+  }
+ 
+  if (conteudo.substring(1) == "BD 9B 06 7D") //UID 2 - Cartao
+  {
+    Serial.println("Ola Cartao !");
+    Serial.println();
+    delay(3000);
+  }
+} 
