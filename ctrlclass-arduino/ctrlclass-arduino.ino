@@ -3,8 +3,8 @@
 #include <Ethernet.h>
 #include <EthernetUdp.h>         // UDP library from: bjoern@cs.stanford.edu 12/30/2008
 
-#define SS_PIN 9
-#define RST_PIN 8
+#define SS_PIN 49
+#define RST_PIN 48
 MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance.
  
 char st[20];
@@ -16,7 +16,7 @@ char st[20];
 byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
-IPAddress ip(192, 168, 1, 177);
+IPAddress ip(192, 168, 137, 2);
 
 unsigned int localPort = 8888;      // local port to listen on
 
