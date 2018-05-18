@@ -3,20 +3,16 @@
 #include <Ethernet.h>
 #include <EthernetUdp.h>         // UDP library from: bjoern@cs.stanford.edu 12/30/2008
 
-#define SS_PIN 9
-#define RST_PIN 8
+#define SS_PIN 49
+#define RST_PIN 48
 MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance.
  
-char st[20];
- 
-// Ethernet
-
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network:
 byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
-IPAddress ip(192, 168, 1, 177);
+IPAddress ip(192, 168, 137, 2);
 
 unsigned int localPort = 8888;      // local port to listen on
 
@@ -28,88 +24,78 @@ char  ReplyBuffer[] = "acknowledged";       // a string to send back
 EthernetUDP Udp;
 
 void setup() {
+  // config Serial
+  Serial.begin(9600);
+
   // start the Ethernet and UDP:
   Ethernet.begin(mac, ip);
   Udp.begin(localPort);
-
-  Serial.begin(9600);
   
-  // RFID
-  SPI.begin();    // Inicia  SPI bus
-  mfrc522.PCD_Init(); // Inicia MFRC522
-  Serial.println("Aproxime o seu cartao do leitor...");
-  Serial.println();
+  // start RFID
+  SPI.begin();
+  mfrc522.PCD_Init();
+  Serial.println("Aproxime o seu cartao do leitor...\n");
+
+  // config Saida
+  pinMode(13, OUTPUT); 
+  digitalWrite(13, LOW);
 }
- 
-void loop() 
-{
-  // Início do código Ethernet
-   
-  // if there's data available, read a packet
-  int packetSize = Udp.parsePacket();
-  if (packetSize) {
-    Serial.print("Received packet of size ");
-    Serial.println(packetSize);
-    Serial.print("From ");
+
+void ethernet(){
+  if (Udp.parsePacket()) { // if there's data available, read a packet
     IPAddress remote = Udp.remoteIP();
+    Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE); // read the packet into packetBufffer
+    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort()); // send a reply to the IP address and port that sent us the packet we received
+    Udp.write(ReplyBuffer);
+    Udp.endPacket();
+
+    //mostra as informações da conexão
+    Serial.print("Received packet of size ");
+    Serial.println(Udp.parsePacket());
+    Serial.print("From ");
     for (int i = 0; i < 4; i++) {
       Serial.print(remote[i], DEC);
-      if (i < 3) {
-        Serial.print(".");
-      }
+      if (i < 3 ) Serial.print(".");
     }
     Serial.print(", port ");
     Serial.println(Udp.remotePort());
-
-    // read the packet into packetBufffer
-    Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
     Serial.println("Contents:");
     Serial.println(packetBuffer);
+  }
+}
 
-    // send a reply to the IP address and port that sent us the packet we received
-    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
-    Udp.write(ReplyBuffer);
-    Udp.endPacket();
+bool isAllowed(String tag){ //retorna se o usuario está permitido ou nao
+  if(tag=="93 52 BE A3") return true;
+  return false;
+}
+
+void check(String tag){
+  Serial.println("TAG: " + tag);
+  if(isAllowed(tag)){ // usuario permitido
+    Serial.println("Usuário autorizado");
+    digitalWrite(13, HIGH);
+  }else{
+    Serial.println("Não está autorizado");
   }
-  delay(10);
-  
-  // Início do código RFID
-  
-  // Look for new cards
-  if ( ! mfrc522.PICC_IsNewCardPresent()) 
-  {
-    return;
-  }
-  // Select one of the cards
-  if ( ! mfrc522.PICC_ReadCardSerial()) 
-  {
-    return;
-  }
-  //Mostra UID na serial
-  Serial.print("UID da tag :");
-  String conteudo= "";
-  byte letra;
+  delay(1000);
+  Serial.println("**********************\n");
+  digitalWrite(13, LOW);
+}
+
+void rfid(){
+  if ( ! mfrc522.PICC_IsNewCardPresent()) return;
+  if ( ! mfrc522.PICC_ReadCardSerial()) return;
+  String tag= "";
   for (byte i = 0; i < mfrc522.uid.size; i++) 
   {
-     Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-     Serial.print(mfrc522.uid.uidByte[i], HEX);
-     conteudo.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
-     conteudo.concat(String(mfrc522.uid.uidByte[i], HEX));
+     tag.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
+     tag.concat(String(mfrc522.uid.uidByte[i], HEX));
   }
-  Serial.println();
-  Serial.print("Mensagem : ");
-  conteudo.toUpperCase();
-  if (conteudo.substring(1) == "ED 78 03 CA") //UID 1 - Chaveiro
-  {
-    Serial.println("Ola FILIPEFLOP !");
-    Serial.println();
-    delay(3000);
-  }
- 
-  if (conteudo.substring(1) == "BD 9B 06 7D") //UID 2 - Cartao
-  {
-    Serial.println("Ola Cartao !");
-    Serial.println();
-    delay(3000);
-  }
+  tag.toUpperCase();
+  check(tag.substring(1));
+}
+
+void loop() {
+  ethernet(); delay(10); // Início do código Ethernet
+  rfid(); delay(10); // Início do código RFID
 } 
