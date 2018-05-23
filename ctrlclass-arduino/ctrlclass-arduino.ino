@@ -37,8 +37,10 @@ void setup() {
   Serial.println("Aproxime o seu cartao do leitor...\n");
 
   // config Saida
-  pinMode(13, OUTPUT); 
-  digitalWrite(13, LOW);
+  pinMode(14, OUTPUT); 
+  digitalWrite(14, LOW);
+  pinMode(15, OUTPUT); 
+  digitalWrite(15, LOW);
 }
 
 void ethernet(){
@@ -73,13 +75,19 @@ void check(String tag){
   Serial.println("TAG: " + tag);
   if(isAllowed(tag)){ // usuario permitido
     Serial.println("Usuário autorizado");
-    digitalWrite(13, HIGH);
+    digitalWrite(15, HIGH);
+    digitalWrite(14, HIGH); delay(50); digitalWrite(14, LOW); delay(50); 
+    digitalWrite(14, HIGH);  delay(50); digitalWrite(14, LOW);
+    digitalWrite(15, LOW);
   }else{
     Serial.println("Não está autorizado");
+    digitalWrite(14, HIGH); delay(150); digitalWrite(14, LOW); delay(50); 
+    digitalWrite(14, HIGH); delay(50); digitalWrite(14, LOW); delay(50); 
+    digitalWrite(14, HIGH); delay(50); digitalWrite(14, LOW); delay(50); 
+    digitalWrite(14, HIGH); delay(50); digitalWrite(14, LOW);
   }
   delay(1000);
   Serial.println("**********************\n");
-  digitalWrite(13, LOW);
 }
 
 void rfid(){
@@ -96,6 +104,6 @@ void rfid(){
 }
 
 void loop() {
-  ethernet(); delay(10); // Início do código Ethernet
-  rfid(); delay(10); // Início do código RFID
+  //ethernet(); delay(10); // Início do código Ethernet
+  rfid(); delay(500); // Início do código RFID
 } 
