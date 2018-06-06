@@ -2,33 +2,25 @@ package com.ctrlclass.server;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.concurrent.TimeoutException;
 
 public class Communication extends Thread {
-
-    private String serverHostname;
-    private DatagramSocket ds;
-    private InetAddress ip;
-    private DatagramPacket send, rec;
-    private String receivedString;
-
+    private DatagramSocket socket;
+    private byte[] buf;
     private boolean running;
+    private AuthManager authManager;
 
-    public Communication(String serverHostname) {
-        this.serverHostname = serverHostname;
+    public Communication(AuthManager authManager) {
+
+        this.authManager = authManager;
+
+        buf = new byte[1024];
         try {
-            byte[] receiveData = new byte[1024];
-            ip = InetAddress.getByName(serverHostname);
-            ds = new DatagramSocket();
-            rec = new DatagramPacket(receiveData, receiveData.length);
-            ds.setSoTimeout(10000);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-
+            socket = new DatagramSocket();
+            socket.setSoTimeout(1000);
         } catch (SocketException e) {
             e.printStackTrace();
-
         }
-        running = true;
     }
 
     public void terminate() {
@@ -43,25 +35,49 @@ public class Communication extends Thread {
     public void run() {
         InetAddress returnIPAddress;
         int returnPort;
+        DatagramPacket packet;
+
+        running = true;
+
         System.out.println("Communication started");
         while (running) {
 
+            packet = new DatagramPacket(buf, buf.length);
+
+            System.out.println(1);
             try {
-                ds.receive(rec);
-                receivedString = new String(rec.getData());
+                socket.receive(packet);
+            } catch (IOException e) {
+                //continue;
+            }
+            String receivedString = new String(packet.getData());
+            returnIPAddress = packet.getAddress();
+            returnPort = packet.getPort();
 
-                returnIPAddress = rec.getAddress();
-                returnPort = rec.getPort();
+            System.out.println(returnIPAddress + ":" + returnPort + " says: " + receivedString);
 
-                System.out.println("Message: " + receivedString);
-                System.out.println("Server: " + returnIPAddress + ":" + returnPort);
+            // TODO Convert receivedString to uid
+            String uid = receivedString;
 
-                ds.close();
+            String reply;
+            if(authManager.isAuthorized(uid)) {
+                reply = "UID: ["+uid+"] authorized.";
+            } else {
+                reply = "UID: ["+uid+"] unauthorized.";
+            }
+
+            buf = reply.getBytes();
+            packet = new DatagramPacket(buf, buf.length, returnIPAddress, returnPort);
+
+            try {
+                socket.send(packet);
             } catch (IOException e) {
                 e.printStackTrace();
-                running = false;
+                continue;
             }
+
         }
-        System.out.println("Communication finished");
+        socket.close();
+        System.out.println("Comunicação finalizada");
     }
 }

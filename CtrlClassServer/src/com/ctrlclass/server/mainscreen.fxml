@@ -24,8 +24,8 @@
       <Label text="IP address:" GridPane.rowIndex="2" />
       <ButtonBar GridPane.rowIndex="4">
          <buttons>
-            <Button mnemonicParsing="false" onAction="#startButtonPressed" text="Start" />
-            <Button mnemonicParsing="false" onAction="#stopButtonPressed" text="Stop" />
+            <Button fx:id="startButton" mnemonicParsing="false" onAction="#startButtonPressed" text="Start" />
+            <Button fx:id="stopButton" mnemonicParsing="false" onAction="#stopButtonPressed" text="Stop" />
          </buttons>
       </ButtonBar>
    </children>

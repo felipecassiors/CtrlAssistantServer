@@ -1,26 +1,27 @@
 package com.ctrlclass.server;
 
-public class Aluno {
-    private int matricula;
-    private int uid;
+import java.util.ArrayList;
 
-    public int getMatricula() {
+public class Aluno {
+    private String matricula;
+    private String uid;
+    private ArrayList<Marcacao> marcacoes;
+
+    public Aluno(String matricula, String uid) {
+        this.matricula = matricula;
+        this.uid = uid;
+        this.marcacoes = new ArrayList<>();
+    }
+
+    public String getMatricula() {
         return matricula;
     }
 
-    public void setMatricula(int matricula) {
-        this.matricula = matricula;
-    }
-
-    public int getUid() {
+    public String getUid() {
         return uid;
     }
 
-    public void setUid(int uid) {
-        this.uid = uid;
-    }
-
-    public boolean checkUid(int uid) {
-        return this.uid == uid;
+    public ArrayList<Marcacao> getMarcacoes() {
+        return marcacoes;
     }
 }
