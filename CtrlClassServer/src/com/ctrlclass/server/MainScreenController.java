@@ -43,6 +43,8 @@ public class MainScreenController {
             communication = null;
 
         }
+
+
         fileManager.criarArquivoCsvMarcacoes(authManager.getMarcacoes());
         fileManager.criarArquivoCsvFrequencia(authManager.getAlunos());
 

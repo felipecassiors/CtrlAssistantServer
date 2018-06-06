@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.*;
 
 public class Communication extends Thread {
-    private DatagramSocket socket;
-    private byte[] buf;
     private boolean running;
     private AuthManager authManager;
 
@@ -13,13 +11,6 @@ public class Communication extends Thread {
 
         this.authManager = authManager;
 
-        buf = new byte[1024];
-        try {
-            socket = new DatagramSocket();
-            socket.setSoTimeout(1000);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
     }
 
     public void terminate() {
@@ -34,15 +25,36 @@ public class Communication extends Thread {
     public void run() {
         InetAddress returnIPAddress;
         int returnPort;
-        DatagramPacket packet;
+
+        InetAddress ip = null;
+        try {
+            ip = InetAddress.getByName("192.168.137.2");
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        int port = 6000;
+
+        DatagramSocket socket = null;
+        try {
+            socket = new DatagramSocket(port);
+            socket.setSoTimeout(1000);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        byte[] receiveData = new byte[1024];
+
+        DatagramPacket packet = new DatagramPacket(receiveData, receiveData.length);
+
+        try {
+            System.out.println("Communication started, listening on " + InetAddress.getLocalHost().getHostAddress() + ":" + port);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
 
         running = true;
-
-        System.out.println("Communication started");
         while (running) {
 
             System.out.println("Trying to receive packet...");
-            packet = new DatagramPacket(buf, buf.length);
             try {
                 socket.receive(packet);
             } catch (IOException e) {
@@ -50,25 +62,27 @@ public class Communication extends Thread {
                 continue;
             }
 
-            String receivedString = new String(packet.getData());
+            String receivedString = new String(packet.getData(),  0, packet.getLength());
+
             returnIPAddress = packet.getAddress();
             returnPort = packet.getPort();
 
             System.out.println("Received: [" + receivedString + "] from: " + returnIPAddress + ":" + returnPort);
 
+            System.out.println("Checking if is authorized...");
             String reply = authManager.isAuthorized(receivedString).toString();
             System.out.println("Reply: [" + reply + "]");
 
             System.out.println("Trying to send reply packet...");
-            buf = reply.getBytes();
-            packet = new DatagramPacket(buf, buf.length, returnIPAddress, returnPort);
+            receiveData = reply.getBytes();
+            packet = new DatagramPacket(receiveData, receiveData.length, returnIPAddress, returnPort);
             try {
                 socket.send(packet);
             } catch (IOException e) {
                 System.err.println("Failed to send reply packet");
                 continue;
             }
-
+            System.out.println("Packet sent.");
         }
         socket.close();
         System.out.println("Communication finished.");

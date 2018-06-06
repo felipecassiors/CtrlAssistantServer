@@ -16,6 +16,7 @@ unsigned int localPort = 8888;
 
 // Configurações do servidor
 IPAddress ipServer(192, 168, 137, 1);
+unsigned int serverPort = 6000;
 
 // buffers for receiving and sending data
 char packetBuffer[UDP_TX_PACKET_MAX_SIZE];  //buffer to hold incoming packet,
@@ -44,18 +45,19 @@ void setup() {
 }
 
 void sendToServer(String tag) {
-  char tagToSend = tag.c_str();
-  Udp.beginPacket(ipServer, localPort);
-  Udp.write(tagToSend);
+  Serial.print("Sending:  [");
+  Serial.print(tag.c_str());
+  Serial.println("]...");
+  Udp.beginPacket(ipServer, serverPort);
+  Udp.write("123456789AB");
+  //Udp.write(tag.c_str());
   Udp.endPacket();
 }
 
 bool receiveFromServer() {
   int packetSize = Udp.parsePacket();
   if (packetSize) {
-    Serial.print("Received packet of size ");
-    Serial.println(packetSize);
-    Serial.print("From ");
+    Serial.print("Received packet from ");
     IPAddress remote = Udp.remoteIP();
     for (int i = 0; i < 4; i++) {
       Serial.print(remote[i], DEC);
@@ -68,15 +70,18 @@ bool receiveFromServer() {
 
     // read the packet into packetBufffer
     Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
-    Serial.println("Contents:");
-    Serial.println(packetBuffer);
+    Serial.print("Received:  [");
+    Serial.print(packetBuffer);
+    Serial.println("]");
     
     return strcmp(packetBuffer, "true") == 0;
   }
+  Serial.println("Failed to receive");
   return false;
 }
 
 bool isAllowed(String tag){ //retorna se o usuario está permitido ou nao
+  Serial.println("Checking if UID is authorized...");
   sendToServer(tag);
   delay(500);
   return receiveFromServer();
