@@ -13,6 +13,8 @@ public class FileManager {
     private static final String COMMA_DELIMITER = ";";
     private static final String NEW_LINE_SEPARATOR = "\n";
     private static final String CABECALHO_CSV_MARCACOES = "matricula"+COMMA_DELIMITER+"uid"+COMMA_DELIMITER+"horario";
+    private static final String CABECALHO_CSV_FREQUENCIA = "presente"+COMMA_DELIMITER+"matricula"+COMMA_DELIMITER+"uid"+COMMA_DELIMITER+"horario_entrada"+COMMA_DELIMITER+"horario_saida"+COMMA_DELIMITER+"permanencia";
+
     private static final String NOME_ARQUIVO_CSV_MARCACOES = "relatorio_de_marcacoes.csv";
     private static final String NOME_ARQUIVO_CSV_FREQUENCIA = "relatorio_de_frequencia.csv";
 
@@ -49,7 +51,41 @@ public class FileManager {
     }
 
     public void criarArquivoCsvFrequencia (ArrayList<Aluno> alunos) {
+        FileWriter fileWriter = null;
 
+        try {
+            fileWriter = new FileWriter(NOME_ARQUIVO_CSV_FREQUENCIA);
+
+            fileWriter.append(CABECALHO_CSV_FREQUENCIA);
+            fileWriter.append(NEW_LINE_SEPARATOR);
+
+            for (Aluno aluno : alunos) {
+                fileWriter.append(aluno.isPresent().toString());
+                fileWriter.append(COMMA_DELIMITER);
+                fileWriter.append(aluno.getMatricula());
+                fileWriter.append(COMMA_DELIMITER);
+                fileWriter.append(aluno.getUid());
+                fileWriter.append(COMMA_DELIMITER);
+                fileWriter.append(aluno.getInTime().toString());
+                fileWriter.append(NEW_LINE_SEPARATOR);
+                fileWriter.append(aluno.getOutTime().toString());
+                fileWriter.append(NEW_LINE_SEPARATOR);
+                fileWriter.append(aluno.getPermanenceTime().toString());
+                fileWriter.append(NEW_LINE_SEPARATOR);
+            }
+
+            System.out.println(TITULO_ARQUIVO_CSV_FREQUENCIA+" foi criado com sucesso.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fileWriter.flush();
+                fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public ArrayList<Aluno> abrirArquivoCsvAutorizados (File file) {

@@ -1,7 +1,6 @@
 package com.ctrlclass.server;
 
 import java.time.LocalTime;
-import java.time.ZonedDateTime;
 
 public class Marcacao {
     private String uid;

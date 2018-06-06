@@ -4,6 +4,8 @@ import javafx.scene.control.Button;
 import javafx.stage.FileChooser;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class MainScreenController {
@@ -25,6 +27,8 @@ public class MainScreenController {
 
         authManager.setAlunos(alunos);
 
+        authManager.setStartTime(LocalTime.now());
+
         communication = new Communication(authManager);
         communication.start();
 
@@ -40,6 +44,9 @@ public class MainScreenController {
 
         }
         fileManager.criarArquivoCsvMarcacoes(authManager.getMarcacoes());
+        fileManager.criarArquivoCsvFrequencia(authManager.getAlunos());
+
+        authManager.setFinishTime(LocalTime.now());
 
         stopButton.setVisible(false);
         startButton.setVisible(true);
@@ -49,4 +56,5 @@ public class MainScreenController {
         startButton.setVisible(true);
         stopButton.setVisible(false);
     }
+
 }

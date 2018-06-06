@@ -7,18 +7,18 @@
 #define RST_PIN 48
 MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance.
  
-// Enter a MAC address and IP address for your controller below.
-// The IP address will be dependent on your local network:
+// Configurações da interface de rede do Arduino
 byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
 IPAddress ip(192, 168, 137, 2);
+unsigned int localPort = 8888;
 
-unsigned int localPort = 8888;      // local port to listen on
+// Configurações do servidor
+IPAddress ipServer(192, 168, 137, 1);
 
 // buffers for receiving and sending data
 char packetBuffer[UDP_TX_PACKET_MAX_SIZE];  //buffer to hold incoming packet,
-char  ReplyBuffer[] = "acknowledged";       // a string to send back
 
 // An EthernetUDP instance to let us send and receive packets over UDP
 EthernetUDP Udp;
@@ -43,32 +43,43 @@ void setup() {
   digitalWrite(15, LOW);
 }
 
-void ethernet(){
-  if (Udp.parsePacket()) { // if there's data available, read a packet
-    IPAddress remote = Udp.remoteIP();
-    Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE); // read the packet into packetBufffer
-    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort()); // send a reply to the IP address and port that sent us the packet we received
-    Udp.write(ReplyBuffer);
-    Udp.endPacket();
+void sendToServer(String tag) {
+  char tagToSend = tag.c_str();
+  Udp.beginPacket(ipServer, localPort);
+  Udp.write(tagToSend);
+  Udp.endPacket();
+}
 
-    //mostra as informações da conexão
+bool receiveFromServer() {
+  int packetSize = Udp.parsePacket();
+  if (packetSize) {
     Serial.print("Received packet of size ");
-    Serial.println(Udp.parsePacket());
+    Serial.println(packetSize);
     Serial.print("From ");
+    IPAddress remote = Udp.remoteIP();
     for (int i = 0; i < 4; i++) {
       Serial.print(remote[i], DEC);
-      if (i < 3 ) Serial.print(".");
+      if (i < 3) {
+        Serial.print(".");
+      }
     }
     Serial.print(", port ");
     Serial.println(Udp.remotePort());
+
+    // read the packet into packetBufffer
+    Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
     Serial.println("Contents:");
     Serial.println(packetBuffer);
+    
+    return strcmp(packetBuffer, "true") == 0;
   }
+  return false;
 }
 
 bool isAllowed(String tag){ //retorna se o usuario está permitido ou nao
-  if(tag=="93 52 BE A3") return true;
-  return false;
+  sendToServer(tag);
+  delay(500);
+  return receiveFromServer();
 }
 
 void check(String tag){
@@ -104,6 +115,5 @@ void rfid(){
 }
 
 void loop() {
-  //ethernet(); delay(10); // Início do código Ethernet
   rfid(); delay(500); // Início do código RFID
 } 

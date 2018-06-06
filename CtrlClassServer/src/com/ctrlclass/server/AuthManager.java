@@ -1,5 +1,7 @@
 package com.ctrlclass.server;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class AuthManager {
@@ -7,16 +9,36 @@ public class AuthManager {
     private ArrayList<Aluno> alunos;
     private ArrayList<Marcacao> marcacoes;
 
+    private LocalTime startTime;
+    private LocalTime finishTime;
+    private Duration classDuration;
+
     public AuthManager() {
         this.marcacoes = new ArrayList<>();
         this.alunos =  new ArrayList<>();
     }
 
-    public boolean isAuthorized (String uid) {
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getFinishTime() {
+        return finishTime;
+    }
+
+    public void setFinishTime(LocalTime finishTime) {
+        this.finishTime = finishTime;
+    }
+
+    public Boolean isAuthorized (String uid) {
         for (Aluno aluno: alunos) {
             if (aluno.getUid().equalsIgnoreCase(uid)) {
                 Marcacao marcacao = new Marcacao(uid, aluno.getMatricula());
-                aluno.getMarcacoes().add(marcacao);
+                aluno.addMarcacao(marcacao);
                 marcacoes.add(marcacao);
                 return true;
             }
@@ -26,8 +48,17 @@ public class AuthManager {
     }
 
     public static boolean isValidUid (String uid) {
-        String sample = "043A98CABB2B80";
+        String sample = "FA CC 36 A5";
         return uid.length() == sample.length();
+    }
+
+    public void computeFrequence() {
+        classDuration = Duration.between(startTime, finishTime);
+        System.out.println("Class duration: "+classDuration.toString());
+
+        for (Aluno aluno :  alunos) {
+            aluno.setPresent(aluno.getPermanenceTime().compareTo(classDuration) >= 0);
+        }
     }
 
     public ArrayList<Aluno> getAlunos() {
