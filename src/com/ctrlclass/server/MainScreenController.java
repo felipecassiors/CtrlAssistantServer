@@ -37,12 +37,7 @@ public class MainScreenController {
     }
 
     public void stopButtonPressed() {
-        if (communication != null || communication.isRunning()) {
-
-            communication.terminate();
-            communication = null;
-
-        }
+        stopCommunication();
 
 
         fileManager.criarArquivoCsvMarcacoes(authManager.getMarcacoes());
@@ -58,5 +53,15 @@ public class MainScreenController {
         startButton.setVisible(true);
         stopButton.setVisible(false);
     }
+
+    public void stopCommunication () {
+        if (communication != null || communication.isRunning()) {
+
+            communication.terminate();
+            communication = null;
+
+        }
+    }
+
 
 }

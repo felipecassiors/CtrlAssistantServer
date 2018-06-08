@@ -25,10 +25,10 @@ public class Main extends Application {
         launch(args);
     }
 
-    /*
+
     @Override
     public void stop() throws Exception {
-        controller.stopButtonPressed();
+        controller.stopCommunication();
         super.stop();
-    }*/
+    }
 }
