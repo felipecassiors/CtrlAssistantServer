@@ -16,6 +16,11 @@ public class MainScreenController {
     private FileManager fileManager = new FileManager();
     private AuthManager authManager = new AuthManager();
     private FrequenceManager frequenceManager;
+    private Main main;
+
+    public MainScreenController(Main main) {
+        this.main = main;
+    }
 
     public void startButtonPressed() {
 
@@ -32,36 +37,40 @@ public class MainScreenController {
         communication = new Communication(authManager);
         communication.start();
 
-        startButton.setVisible(false);
-        stopButton.setVisible(true);
+        activateStopButton();
     }
 
     public void stopButtonPressed() {
         stopCommunication();
-
 
         fileManager.criarArquivoCsvMarcacoes(authManager.getMarcacoes());
         fileManager.criarArquivoCsvFrequencia(authManager.getAlunos());
 
         authManager.setFinishTime(LocalTime.now());
 
-        stopButton.setVisible(false);
-        startButton.setVisible(true);
+        activateStartButton();
     }
 
     public void initialize() {
-        startButton.setVisible(true);
-        stopButton.setVisible(false);
+        activateStartButton();
     }
 
     public void stopCommunication () {
-        if (communication != null || communication.isRunning()) {
-
-            communication.terminate();
+        if (communication != null ) {
+            if (communication.isRunning()){
+                communication.terminate();
+            }
             communication = null;
-
         }
     }
 
+    public void activateStartButton() {
+        startButton.setDisable(false);
+        stopButton.setDisable(true);
+    }
 
+    public void activateStopButton() {
+        startButton.setDisable(true);
+        stopButton.setDisable(false);
+    }
 }

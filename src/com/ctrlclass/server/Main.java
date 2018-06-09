@@ -9,15 +9,18 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    MainScreenController controller;
+    MainScreenController mainScreenController;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        Parent root = fxmlLoader.load(getClass().getResource("mainscreen.fxml"));
-        controller = (MainScreenController) fxmlLoader.getController();
-        primaryStage.setTitle("CtrlClass Server");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        mainScreenController = new MainScreenController(this);
+
+        FXMLLoader mainViewLoader = new FXMLLoader(getClass().getResource("mainscreen.fxml"));
+        mainViewLoader.setController(mainScreenController);
+        Parent mainView = mainViewLoader.load();
+
+        primaryStage.setTitle("Servidor - CtrlClass");
+        primaryStage.setScene(new Scene(mainView));
         primaryStage.show();
     }
 
@@ -25,10 +28,13 @@ public class Main extends Application {
         launch(args);
     }
 
+    public MainScreenController getMainScreenController() {
+        return mainScreenController;
+    }
 
     @Override
     public void stop() throws Exception {
-        controller.stopCommunication();
+        getMainScreenController().stopCommunication();
         super.stop();
     }
 }
