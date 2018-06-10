@@ -1,6 +1,7 @@
 package com.ctrlclass.server;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 
 import java.io.*;
@@ -12,6 +13,7 @@ public class MainScreenController {
 
     public Button startButton;
     public Button stopButton;
+    public Label lastLabel;
     private Communication communication = null;
     private FileManager fileManager = new FileManager();
     private AuthManager authManager = new AuthManager();
@@ -34,7 +36,7 @@ public class MainScreenController {
 
         authManager.setStartTime(LocalTime.now());
 
-        communication = new Communication(authManager);
+        communication = new Communication(this, authManager);
         communication.start();
 
         activateStopButton();
@@ -48,6 +50,7 @@ public class MainScreenController {
 
         authManager.setFinishTime(LocalTime.now());
 
+        updateLastLabel("");
         activateStartButton();
     }
 
@@ -72,5 +75,9 @@ public class MainScreenController {
     public void activateStopButton() {
         startButton.setDisable(true);
         stopButton.setDisable(false);
+    }
+
+    public void updateLastLabel (String msg) {
+        lastLabel.setText(msg);
     }
 }

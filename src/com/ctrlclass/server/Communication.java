@@ -6,11 +6,11 @@ import java.net.*;
 public class Communication extends Thread {
     private boolean running;
     private AuthManager authManager;
+    private MainScreenController controller;
 
-    public Communication(AuthManager authManager) {
-
+    public Communication(MainScreenController controller, AuthManager authManager) {
+        this.controller = controller;
         this.authManager = authManager;
-
     }
 
     public void terminate() {
@@ -23,68 +23,37 @@ public class Communication extends Thread {
 
     @Override
     public void run() {
-        InetAddress returnIPAddress;
-        int returnPort;
+        try{
+            int port = 6000;
+            byte[] receiveData = new byte[12];
+            byte[] sendData;
+            DatagramSocket serverSocket = new DatagramSocket(port);
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            running = true;
+            while(running)  {
+                System.out.println("Waiting for some packet...");
 
-        InetAddress ip = null;
-        try {
-            ip = InetAddress.getByName("192.168.137.2");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        int port = 6000;
+                serverSocket.receive(receivePacket);
+                String receivedString = new String( receivePacket.getData(), 0,  receivePacket.getLength() );
+                System.out.println("Received: [" + receivedString + "] from: " + receivePacket.getAddress() + ":" + receivePacket.getPort());
 
-        DatagramSocket socket = null;
-        try {
-            socket = new DatagramSocket(port);
-            socket.setSoTimeout(1000);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-        byte[] receiveData = new byte[1024];
+                Boolean authorized = authManager.isAuthorized(receivedString);
 
-        DatagramPacket packet = new DatagramPacket(receiveData, receiveData.length);
+                if(authorized) {
+                    controller.updateLastLabel("UID [" + receivedString + "] autorizado");
+                } else {
+                    controller.updateLastLabel("UID [" + receivedString + "] autorizado");
+                }
 
-        try {
-            System.out.println("Communication started, listening on " + InetAddress.getLocalHost().getHostAddress() + ":" + port);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-
-        running = true;
-        while (running) {
-
-            System.out.println("Trying to receive packet...");
-            try {
-                socket.receive(packet);
-            } catch (IOException e) {
-                System.err.println("Failed to receive packet");
-                continue;
+                sendData =  ( authorized.toString() ).getBytes();
+                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
+                serverSocket.send(sendPacket);
+                System.out.println("Sent: [" + sendData + "] to: " + receivePacket.getAddress() + ":" + receivePacket.getPort());
             }
-
-            String receivedString = new String(packet.getData(),  0, packet.getLength());
-
-            returnIPAddress = packet.getAddress();
-            returnPort = packet.getPort();
-
-            System.out.println("Received: [" + receivedString + "] from: " + returnIPAddress + ":" + returnPort);
-
-            System.out.println("Checking if is authorized...");
-            String reply = authManager.isAuthorized(receivedString).toString();
-            System.out.println("Reply: [" + reply + "]");
-
-            System.out.println("Trying to send reply packet...");
-            receiveData = reply.getBytes();
-            packet = new DatagramPacket(receiveData, receiveData.length, returnIPAddress, returnPort);
-            try {
-                socket.send(packet);
-            } catch (IOException e) {
-                System.err.println("Failed to send reply packet");
-                continue;
-            }
-            System.out.println("Packet sent.");
+            serverSocket.close();
+            running = false;
+        } catch (Exception e){
+            System.err.println(e);
         }
-        socket.close();
-        System.out.println("Communication finished.");
     }
 }
