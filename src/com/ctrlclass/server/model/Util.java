@@ -1,4 +1,4 @@
-package com.ctrlclass.server;
+package com.ctrlclass.server.model;
 
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;

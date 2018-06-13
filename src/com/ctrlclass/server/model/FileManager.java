@@ -1,4 +1,4 @@
-package com.ctrlclass.server;
+package com.ctrlclass.server.model;
 
 import java.io.*;
 import java.time.Duration;
@@ -51,7 +51,7 @@ public class FileManager {
                 fileWriter.append(NEW_LINE_SEPARATOR);
             }
 
-            System.out.println(TITULO_ARQUIVO_CSV_MARCACOES+" foi criado com sucesso.");
+            System.out.println(TITULO_ARQUIVO_CSV_MARCACOES+" criado com sucesso");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,29 +65,43 @@ public class FileManager {
         }
     }
 
-    public void criarArquivoCsvFrequencia (ArrayList<Aluno> alunos, Duration classTime, Duration toleranceTime) {
+    public void criarArquivoCsvFrequencia (FrequenceManager frequenceManager) {
+
         FileWriter fileWriter = null;
 
         try {
+
+            /*
             File recordsDir = new File(System.getProperty("user.home"), ".myApplicationName/records");
             if (! recordsDir.exists()) {
                 recordsDir.mkdirs();
             }
+            */
 
             fileWriter = new FileWriter(NOME_ARQUIVO_CSV_FREQUENCIA);
 
-            fileWriter.append("Aula:");
+            fileWriter.append("Inicio:");
             fileWriter.append(COMMA_DELIMITER);
-            fileWriter.append(Util.formatDuration(classTime));
+            fileWriter.append(frequenceManager.getStartTime().format(Util.TIME_FORMATTER));
+            fileWriter.append(COMMA_DELIMITER);
+            fileWriter.append("Termino:");
+            fileWriter.append(COMMA_DELIMITER);
+            fileWriter.append(frequenceManager.getFinishTime().format(Util.TIME_FORMATTER));
+            fileWriter.append(NEW_LINE_SEPARATOR);
+            fileWriter.append("Duracao:");
+            fileWriter.append(COMMA_DELIMITER);
+            fileWriter.append(Util.formatDuration(frequenceManager.getClassTime()));
             fileWriter.append(COMMA_DELIMITER);
             fileWriter.append("Tolerancia:");
             fileWriter.append(COMMA_DELIMITER);
-            fileWriter.append(Util.formatDuration(toleranceTime));
+            fileWriter.append(Util.formatDuration(frequenceManager.getToleranceTime()));
             fileWriter.append(NEW_LINE_SEPARATOR);
             fileWriter.append(NEW_LINE_SEPARATOR);
 
             fileWriter.append(CABECALHO_CSV_FREQUENCIA);
             fileWriter.append(NEW_LINE_SEPARATOR);
+
+            ArrayList<Aluno> alunos = frequenceManager.getAlunos();
 
             if (alunos != null) {
                 for (Aluno aluno: alunos) {
@@ -121,18 +135,18 @@ public class FileManager {
                         fileWriter.append(COMMA_DELIMITER);
                     } else {
                         fileWriter.append(Util.formatDuration(aluno.getPermanenceTime()));
-                        fileWriter.append(NEW_LINE_SEPARATOR);
+                        fileWriter.append(COMMA_DELIMITER);
                     }
                     if(aluno.getOutsideTime().isZero()) {
                         fileWriter.append("-");
                         fileWriter.append(COMMA_DELIMITER);
                     } else {
                         fileWriter.append(Util.formatDuration(aluno.getOutsideTime()));
-                        fileWriter.append(NEW_LINE_SEPARATOR);
+                        fileWriter.append(COMMA_DELIMITER);
                     }
                     if(!aluno.isValidPresence()) {
                         fileWriter.append("NAO");
-                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(NEW_LINE_SEPARATOR);
                     } else {
                         fileWriter.append("SIM");
                         fileWriter.append(NEW_LINE_SEPARATOR);
@@ -140,7 +154,7 @@ public class FileManager {
                 }
             }
 
-            System.out.println(TITULO_ARQUIVO_CSV_FREQUENCIA+" foi criado com sucesso.");
+            System.out.println(TITULO_ARQUIVO_CSV_FREQUENCIA+" criado com sucesso");
 
         } catch (Exception e) {
             e.printStackTrace();

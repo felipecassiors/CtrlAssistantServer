@@ -1,4 +1,4 @@
-package com.ctrlclass.server;
+package com.ctrlclass.server.model;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -14,15 +14,11 @@ public class FrequenceManager {
     private Duration toleranceTime;
 
     public FrequenceManager() {
-        alunos = null;
     }
 
     public void computeFrequence() {
         classTime = Duration.between(startTime, finishTime);
-        toleranceTime = classTime.dividedBy(2);
-
-        System.out.println("Tempo de aula: "+Util.formatDuration(classTime));
-        System.out.println("Tempo de tolerância: "+Util.formatDuration(toleranceTime));
+        toleranceTime = classTime.dividedBy(10);
 
         if (alunos != null) {
             for (Aluno aluno : alunos) {

@@ -1,4 +1,4 @@
-package com.ctrlclass.server;
+package com.ctrlclass.server.model;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -103,8 +103,11 @@ public class Aluno {
             if(!marcacoes.get(marcacoes.size()-1).isIn()) {
                 // Define o horário de saída = horário da última marcação
                 outTime = marcacoes.get(marcacoes.size()-1).getTime();
-                validPresence = true;
             }
+        }
+        // Se a quantidade de marcações for PAR, a presença é válida
+        if(marcacoes.size() % 2 == 0) {
+            validPresence = true;
         }
         // Se não houver marcações, permanecem os valores inicializados
     }

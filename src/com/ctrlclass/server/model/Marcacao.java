@@ -1,4 +1,4 @@
-package com.ctrlclass.server;
+package com.ctrlclass.server.model;
 
 import java.time.LocalTime;
 
@@ -41,11 +41,15 @@ public class Marcacao {
 
     @Override
     public String toString() {
-        if(in) {
-            return "MATRÍCULA: ["+matricula+"] UID: ["+uid+"] entrou às "+ time.format(Util.TIME_FORMATTER);
+        if (in != null) {
+            if (in) {
+                return "MATRÍCULA: [" + matricula + "] UID: [" + uid + "] ENTROU às " + time.format(Util.TIME_FORMATTER);
+            } else {
+                return "MATRÍCULA: [" + matricula + "] UID: [" + uid + "] SAIU às " + time.format(Util.TIME_FORMATTER);
+            }
         } else {
-            return "MATRÍCULA: ["+matricula+"] UID: ["+uid+"] saiu às "+ time.format(Util.TIME_FORMATTER);
+            return "UID: [" + uid + "] NEGADO às " + time.format(Util.TIME_FORMATTER);
         }
-
     }
 }
+

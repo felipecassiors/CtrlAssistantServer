@@ -1,4 +1,4 @@
-package com.ctrlclass.server;
+package com.ctrlclass.server.model;
 
 import java.net.*;
 
@@ -6,7 +6,8 @@ public class Communication extends Thread {
     private boolean running;
     private AuthManager authManager;
 
-    public Communication() {
+    public Communication(AuthManager authManager) {
+        this.authManager = authManager;
     }
 
     public boolean isRunning() {

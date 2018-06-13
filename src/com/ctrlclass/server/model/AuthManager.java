@@ -1,6 +1,5 @@
-package com.ctrlclass.server;
+package com.ctrlclass.server.model;
 
-import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
@@ -44,7 +43,9 @@ public class AuthManager {
         return marcacoes;
     }
 
-    public void setMarcacoes(ArrayList<Marcacao> marcacoes) {
-        this.marcacoes = marcacoes;
+    public void clean() {
+        this.marcacoes = new ArrayList<>();
+        this.alunos = new ArrayList<>();
     }
+
 }
