@@ -1,24 +1,28 @@
 package com.ctrlclass.server;
 
-import java.io.IOException;
 import java.net.*;
 
 public class Communication extends Thread {
     private boolean running;
     private AuthManager authManager;
-    private MainScreenController controller;
 
-    public Communication(MainScreenController controller, AuthManager authManager) {
-        this.controller = controller;
-        this.authManager = authManager;
-    }
-
-    public void terminate() {
-        running = false;
+    public Communication() {
     }
 
     public boolean isRunning() {
         return running;
+    }
+
+    public AuthManager getAuthManager() {
+        return authManager;
+    }
+
+    public void setAuthManager(AuthManager authManager) {
+        this.authManager = authManager;
+    }
+
+    public void finish() {
+        running = false;
     }
 
     @Override
@@ -28,27 +32,27 @@ public class Communication extends Thread {
             byte[] receiveData = new byte[12];
             byte[] sendData;
             DatagramSocket serverSocket = new DatagramSocket(port);
+            serverSocket.setSoTimeout(1000);
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             running = true;
             while(running)  {
-                System.out.println("Waiting for some packet...");
+                //System.out.println("Waiting for some packet...");
 
-                serverSocket.receive(receivePacket);
-                String receivedString = new String( receivePacket.getData(), 0,  receivePacket.getLength() );
-                System.out.println("Received: [" + receivedString + "] from: " + receivePacket.getAddress() + ":" + receivePacket.getPort());
-
-                Boolean authorized = authManager.isAuthorized(receivedString);
-
-                if(authorized) {
-                    controller.updateLastLabel("UID [" + receivedString + "] autorizado");
-                } else {
-                    controller.updateLastLabel("UID [" + receivedString + "] autorizado");
+                try {
+                    serverSocket.receive(receivePacket);
+                } catch (SocketTimeoutException e) {
+                    continue;
                 }
+                String receivedString = new String( receivePacket.getData(), 0,  receivePacket.getLength() );
+                //System.out.println("Received: [" + receivedString + "] from: " + receivePacket.getAddress() + ":" + receivePacket.getPort());
 
-                sendData =  ( authorized.toString() ).getBytes();
+                Boolean authorized = authManager.checkAuthorization(receivedString);
+
+                String sendString = authorized.toString();
+                sendData =  sendString.getBytes();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
                 serverSocket.send(sendPacket);
-                System.out.println("Sent: [" + sendData + "] to: " + receivePacket.getAddress() + ":" + receivePacket.getPort());
+                //System.out.println("Sent: [" + sendString + "] to: " + receivePacket.getAddress() + ":" + receivePacket.getPort());
             }
             serverSocket.close();
             running = false;

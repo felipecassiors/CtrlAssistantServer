@@ -8,10 +8,12 @@ public class Aluno {
     private String matricula;
     private String uid;
     private ArrayList<Marcacao> marcacoes;
-    private Boolean present;
+    private boolean present;
     private LocalTime inTime;
     private LocalTime outTime;
     private Duration permanenceTime;
+    private Duration outsideTime;
+    private boolean validPresence;
 
     public Aluno(String matricula, String uid) {
         this.matricula = matricula;
@@ -20,7 +22,9 @@ public class Aluno {
         present = false;
         inTime = null;
         outTime = null;
-        permanenceTime = null;
+        permanenceTime = Duration.ZERO;
+        outsideTime = Duration.ZERO;
+        validPresence = false;
     }
 
     public Boolean isPresent() {
@@ -43,38 +47,69 @@ public class Aluno {
         return marcacoes;
     }
 
-    public void addMarcacao (Marcacao marcacao) {
-        marcacoes.add(marcacao);
-        if(marcacoes.size() == 1) {
-            inTime = marcacoes.get(0).getHorario();
-        }
-        if(marcacoes.size() %2 == 0) {
-            outTime = marcacoes.get(marcacoes.size() - 1).getHorario();
-            permanenceTime = Duration.between(inTime, outTime);
-        }
-    }
-
     public LocalTime getInTime() {
         return inTime;
-    }
-
-    public void setInTime(LocalTime inTime) {
-        this.inTime = inTime;
     }
 
     public LocalTime getOutTime() {
         return outTime;
     }
 
-    public void setOutTime(LocalTime outTime) {
-        this.outTime = outTime;
-    }
-
     public Duration getPermanenceTime() {
         return permanenceTime;
     }
 
-    public void setPermanenceTime(Duration permanenceTime) {
-        this.permanenceTime = permanenceTime;
+    public Duration getOutsideTime() {
+        return outsideTime;
+    }
+
+    public void setOutsideTime(Duration outsideTime) {
+        this.outsideTime = outsideTime;
+    }
+
+    public boolean isValidPresence() {
+        return validPresence;
+    }
+
+    public void setValidPresence(boolean validPresence) {
+        this.validPresence = validPresence;
+    }
+
+    public void addMarcacao(Marcacao marcacao) {
+        marcacao.setMatricula(matricula);
+        marcacao.setIn(marcacoes.size() % 2 == 0);
+        marcacoes.add(marcacao);
+    }
+
+    public void computeTimes() {
+        // Se houver marcações
+        if(!marcacoes.isEmpty()) {
+            // Define o horário de entrada
+            inTime = marcacoes.get(0).getTime();
+
+            for (int i = 1; i < marcacoes.size() ; i++) {
+                // Se for marcação de saída
+                if (!marcacoes.get(i).isIn()) {
+                    // Incrementa o tempo de permanência
+                    permanenceTime = permanenceTime.plus(Duration.between(marcacoes.get(i-1).getTime(), marcacoes.get(i).getTime()));
+                }
+                // Se for marcação de entrada
+                else {
+                    // Incrementa o tempo fora da sala
+                    outsideTime = outsideTime.plus(Duration.between(marcacoes.get(i-1).getTime(), marcacoes.get(i).getTime()));
+                }
+            }
+            // Se a última marcação for de saída
+            if(!marcacoes.get(marcacoes.size()-1).isIn()) {
+                // Define o horário de saída = horário da última marcação
+                outTime = marcacoes.get(marcacoes.size()-1).getTime();
+                validPresence = true;
+            }
+        }
+        // Se não houver marcações, permanecem os valores inicializados
+    }
+
+    public void computePresence(Duration classTime, Duration toleranceTime) {
+        present = permanenceTime.plus(toleranceTime).compareTo(classTime) >= 0;
     }
 }
