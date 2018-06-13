@@ -67,6 +67,6 @@ public class FrequenceManager {
 
     public void computeClassTime() {
         classTime = Duration.between(startTime, finishTime);
-        toleranceTime = classTime.dividedBy(10);
+        toleranceTime = classTime.dividedBy(5);
     }
 }

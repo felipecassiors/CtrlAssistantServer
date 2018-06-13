@@ -4,7 +4,12 @@ import com.ctrlclass.server.view.MainScreenController;
 import com.ctrlclass.server.model.Util;
 import com.ctrlclass.server.model.*;
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,7 +18,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Main extends Application {
 
@@ -23,10 +28,12 @@ public class Main extends Application {
     private FrequenceManager frequenceManager;
     private Communication communication;
 
+    private ObservableList<String> strings;
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         fileManager = new FileManager();
-        authManager = new AuthManager();
+        authManager = new AuthManager(this);
         frequenceManager = null;
         communication = null;
 
@@ -56,6 +63,11 @@ public class Main extends Application {
             communication = new Communication(authManager);
             communication.start();
             System.out.println("Comunicação iniciada");
+
+            strings = FXCollections.observableArrayList();
+            ListProperty<String> listProperty = new SimpleListProperty<>();
+            listProperty.setValue((ObservableList<String>) strings);
+            controller.getMarcacoesList().itemsProperty().bind(listProperty);
         }
     }
 
@@ -69,6 +81,7 @@ public class Main extends Application {
                 e.printStackTrace();
                 System.err.println("Erro ao finalizar comunicação");
             }
+            controller.getMarcacoesList().itemsProperty().unbind();
             System.out.println("Comunicação encerrada");
         }
     }
@@ -116,5 +129,9 @@ public class Main extends Application {
         fileManager.criarArquivoCsvFrequencia(frequenceManager);
 
         authManager.clean();
+    }
+
+    public ObservableList<String> getStrings() {
+        return strings;
     }
 }

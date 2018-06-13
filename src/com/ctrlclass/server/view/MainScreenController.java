@@ -31,6 +31,9 @@ public class MainScreenController {
     private ListView<String> list = new ListView<String>();
 
     @FXML
+    private ListView<String> marcacoesList = new ListView<String>();
+
+    @FXML
     private TextField startTimeText;
 
     @FXML
@@ -42,6 +45,12 @@ public class MainScreenController {
     @FXML
     private TextField toleranceTimeText;
 
+    @FXML
+    private TextField ipTextField;
+
+    @FXML
+    private TextField portTextField;
+
     private Main main;
 
     public MainScreenController(Main main) {
@@ -52,17 +61,22 @@ public class MainScreenController {
         enableStartCommunicationButton();
         enableStartClassButton();
         generateReportsButton.setDisable(true);
+
+        marcacoesList.setDisable(true);
+        list.setDisable(true);
     }
 
     public void startCommunicationButtonPressed() {
         main.startCommunication();
 
+        marcacoesList.setDisable(false);
         enableStopCommunicationButton();
     }
 
     public void stopCommunicationButtonPressed() {
         main.stopCommunication();
 
+        marcacoesList.setDisable(true);
         enableStartCommunicationButton();
     }
 
@@ -78,6 +92,8 @@ public class MainScreenController {
             startCommunicationButtonPressed();
 
             enableFinishClassButton();
+
+            list.setDisable(false);
         }
     }
 
@@ -92,7 +108,8 @@ public class MainScreenController {
         main.generateReports();
         generateReportsButton.setDisable(true);
 
-        list.setItems(null);
+        list.setDisable(true);
+
         classTimeText.setText("");
         toleranceTimeText.setText("");
         startTimeText.setText("");
@@ -137,5 +154,17 @@ public class MainScreenController {
 
     public TextField getToleranceTimeText() {
         return toleranceTimeText;
+    }
+
+    public ListView<String> getMarcacoesList() {
+        return marcacoesList;
+    }
+
+    public TextField getIpTextField() {
+        return ipTextField;
+    }
+
+    public TextField getPortTextField() {
+        return portTextField;
     }
 }
