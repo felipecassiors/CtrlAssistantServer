@@ -4,36 +4,116 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
   <children>
-      <StackPane VBox.vgrow="ALWAYS">
-         <children>
-        <Label alignment="CENTER" style="&#10;" text="CtrlClass" textAlignment="CENTER" textFill="#9f9f9f" wrapText="false">
-          <font>
-            <Font size="18.0" />
-          </font>
-        </Label>
-         </children>
-         <VBox.margin>
-            <Insets />
-         </VBox.margin>
-      </StackPane>
+      <SplitPane dividerPositions="0.29797979797979796" VBox.vgrow="ALWAYS">
+        <items>
+            <VBox alignment="CENTER">
+               <children>
+                  <Label text="Alunos autorizados">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </Label>
+                  <ListView fx:id="list" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Label text="Aula">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </Label>
+                  <GridPane alignment="CENTER" hgap="10.0" vgap="10.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Label text="Horário de início:" GridPane.halignment="RIGHT" />
+                        <TextField fx:id="startTimeText" alignment="CENTER" editable="false" maxWidth="100.0" GridPane.columnIndex="1" />
+                     </children>
+                      <padding>
+                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                      </padding>
+                  </GridPane>
+                  <GridPane alignment="CENTER" hgap="10.0" vgap="10.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="205.0" minWidth="10.0" prefWidth="203.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="233.0" minWidth="10.0" prefWidth="212.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Label text="Horário de término:" GridPane.halignment="RIGHT" />
+                        <TextField fx:id="finishTimeText" alignment="CENTER" editable="false" maxWidth="100.0" prefHeight="25.0" prefWidth="128.0" GridPane.columnIndex="1" />
+                     </children>
+                      <padding>
+                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                      </padding>
+                  </GridPane>
+                  <GridPane alignment="CENTER" hgap="10.0" vgap="10.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="237.0" minWidth="10.0" prefWidth="202.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="227.0" minWidth="10.0" prefWidth="213.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Label text="Duração:" GridPane.halignment="RIGHT" />
+                        <TextField fx:id="classTimeText" alignment="CENTER" editable="false" maxWidth="100.0" GridPane.columnIndex="1" />
+                     </children>
+                      <padding>
+                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                      </padding>
+                  </GridPane>
+                  <GridPane alignment="CENTER" hgap="10.0" vgap="10.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="237.0" minWidth="10.0" prefWidth="202.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="227.0" minWidth="10.0" prefWidth="213.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Label text="Tolerância:" GridPane.halignment="RIGHT" />
+                        <TextField fx:id="toleranceTimeText" alignment="CENTER" editable="false" maxWidth="100.0" GridPane.columnIndex="1" />
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </GridPane>
+               </children>
+            </VBox>
+        </items>
+      </SplitPane>
       <ButtonBar prefHeight="40.0" prefWidth="200.0">
         <buttons>
             <Label alignment="CENTER_RIGHT" text="Comunicação" />
           <Button fx:id="startCommunicationButton" mnemonicParsing="false" onAction="#startCommunicationButtonPressed" text="Iniciar" />
             <Button fx:id="stopCommunicationButton" mnemonicParsing="false" onAction="#stopCommunicationButtonPressed" text="Parar" />
-            <Label alignment="CENTER_RIGHT" text="Aula" />
+            <Label alignment="CENTER_RIGHT" prefHeight="17.0" text="Aula" />
             <Button fx:id="startClassButton" defaultButton="true" mnemonicParsing="false" onAction="#startClassButtonPressed" text="Iniciar" />
             <Button fx:id="finishClassButton" mnemonicParsing="false" onAction="#finishClassButtonPressed" text="Terminar" />
-            <Button fx:id="generateReportsButton" mnemonicParsing="false" onAction="#generateReportsButtonPressed" text="Relatórios" />
+            <Button fx:id="generateReportsButton" mnemonicParsing="false" onAction="#generateReportsButtonPressed" text="Finalizar" />
         </buttons>
          <padding>
-            <Insets left="10.0" right="10.0" />
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
       </ButtonBar>
   </children>

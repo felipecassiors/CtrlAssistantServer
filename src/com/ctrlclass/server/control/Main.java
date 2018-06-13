@@ -4,6 +4,8 @@ import com.ctrlclass.server.view.MainScreenController;
 import com.ctrlclass.server.model.Util;
 import com.ctrlclass.server.model.*;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -73,6 +75,12 @@ public class Main extends Application {
 
     public void finishClass() {
         frequenceManager.setFinishTime(LocalTime.now());
+        frequenceManager.computeClassTime();
+
+        controller.getFinishTimeText().setText(frequenceManager.getFinishTime().format(Util.TIME_FORMATTER));
+        controller.getClassTimeText().setText(Util.formatDuration(frequenceManager.getClassTime()));
+        controller.getToleranceTimeText().setText(Util.formatDuration(frequenceManager.getToleranceTime()));
+
         System.out.println("Aula encerrada");
     }
 
@@ -84,6 +92,15 @@ public class Main extends Application {
 
             frequenceManager = new FrequenceManager();
             frequenceManager.setStartTime(LocalTime.now());
+
+            ArrayList<String> strings = new ArrayList<>();
+            for (Aluno aluno: alunos) {
+                strings.add(aluno.getMatricula() + " - UID: ["+aluno.getUid()+"]");
+            }
+            ObservableList<String> items = FXCollections.observableArrayList (strings);
+            controller.getList().setItems(items);
+
+            controller.getStartTimeText().setText(frequenceManager.getStartTime().format(Util.TIME_FORMATTER));
 
             System.out.println("Aula iniciada");
         }

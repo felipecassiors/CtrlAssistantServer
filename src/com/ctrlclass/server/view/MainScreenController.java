@@ -2,18 +2,45 @@ package com.ctrlclass.server.view;
 
 import com.ctrlclass.server.control.Main;
 import com.ctrlclass.server.model.FileManager;
+import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 
 import java.io.File;
 
 public class MainScreenController {
 
-    public Button startCommunicationButton;
-    public Button stopCommunicationButton;
-    public Button startClassButton;
-    public Button finishClassButton;
-    public Button generateReportsButton;
+    @FXML
+    private Button startCommunicationButton;
+
+    @FXML
+    private Button stopCommunicationButton;
+
+    @FXML
+    private Button startClassButton;
+
+    @FXML
+    private Button finishClassButton;
+
+    @FXML
+    private Button generateReportsButton;
+
+    @FXML
+    private ListView<String> list = new ListView<String>();
+
+    @FXML
+    private TextField startTimeText;
+
+    @FXML
+    private TextField finishTimeText;
+
+    @FXML
+    private TextField classTimeText;
+
+    @FXML
+    private TextField toleranceTimeText;
 
     private Main main;
 
@@ -64,6 +91,13 @@ public class MainScreenController {
     public void generateReportsButtonPressed() {
         main.generateReports();
         generateReportsButton.setDisable(true);
+
+        list.setItems(null);
+        classTimeText.setText("");
+        toleranceTimeText.setText("");
+        startTimeText.setText("");
+        finishTimeText.setText("");
+
     }
     private void enableStartCommunicationButton() {
         startCommunicationButton.setDisable(false);
@@ -85,4 +119,23 @@ public class MainScreenController {
         startClassButton.setDisable(true);
     }
 
+    public ListView<String> getList() {
+        return list;
+    }
+
+    public TextField getStartTimeText() {
+        return startTimeText;
+    }
+
+    public TextField getFinishTimeText() {
+        return finishTimeText;
+    }
+
+    public TextField getClassTimeText() {
+        return classTimeText;
+    }
+
+    public TextField getToleranceTimeText() {
+        return toleranceTimeText;
+    }
 }

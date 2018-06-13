@@ -17,9 +17,6 @@ public class FrequenceManager {
     }
 
     public void computeFrequence() {
-        classTime = Duration.between(startTime, finishTime);
-        toleranceTime = classTime.dividedBy(10);
-
         if (alunos != null) {
             for (Aluno aluno : alunos) {
                 aluno.computeTimes();
@@ -66,5 +63,10 @@ public class FrequenceManager {
 
     public void setToleranceTime(Duration toleranceTime) {
         this.toleranceTime = toleranceTime;
+    }
+
+    public void computeClassTime() {
+        classTime = Duration.between(startTime, finishTime);
+        toleranceTime = classTime.dividedBy(10);
     }
 }
