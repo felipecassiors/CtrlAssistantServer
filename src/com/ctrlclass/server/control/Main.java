@@ -54,7 +54,7 @@ public class Main extends Application {
 
     @Override
     public void stop() throws Exception {
-        communication.finish();
+        stopCommunication();
         super.stop();
     }
 
