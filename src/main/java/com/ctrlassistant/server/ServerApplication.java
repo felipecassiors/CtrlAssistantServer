@@ -37,8 +37,11 @@ public class ServerApplication extends Application {
         rootNode = fxmlLoader.load();
         Scene scene = new Scene(rootNode);
         primaryStage.setTitle(MainScreenController.TITLE);
-        primaryStage.centerOnScreen();
         primaryStage.setScene(scene);
+        primaryStage.centerOnScreen();
+        primaryStage.setMinWidth(rootNode.getBoundsInParent().getHeight());
+        primaryStage.setMinHeight(rootNode.getBoundsInParent().getWidth());
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 

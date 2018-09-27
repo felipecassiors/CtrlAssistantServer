@@ -14,9 +14,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ctrlassistant.server.view.MainScreenController">
+<BorderPane minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ctrlassistant.server.view.MainScreenController">
    <left>
-      <VBox alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefWidth="250.0" BorderPane.alignment="CENTER">
+      <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefWidth="250.0" BorderPane.alignment="CENTER">
          <children>
                   <VBox alignment="CENTER">
                       <children>
@@ -78,11 +78,11 @@
                               </rowConstraints>
                               <children>
                                   <Label text="IP do Arduino:" GridPane.halignment="RIGHT" />
-                                  <TextField fx:id="ipTextField" alignment="CENTER" GridPane.columnIndex="1" />
+                                  <TextField fx:id="ipTextField" alignment="CENTER" disable="true" GridPane.columnIndex="1" />
                                   <Label text="Porta:" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
                                   <TextField fx:id="portTextField" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Status:" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-                        <TextField fx:id="statusTextField" alignment="CENTER" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <TextField fx:id="statusTextField" alignment="CENTER" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     <Button fx:id="startCommunicationButton" mnemonicParsing="false" onAction="#startCommunicationButtonPressed" text="Iniciar" GridPane.rowIndex="3" />
                                     <Button fx:id="stopCommunicationButton" mnemonicParsing="false" onAction="#stopCommunicationButtonPressed" text="Parar" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                               </children>
@@ -96,7 +96,7 @@
       </VBox>
    </left>
    <center>
-      <VBox alignment="CENTER">
+      <VBox alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefWidth="400.0">
          <children>
             <Label text="Alunos na aula">
                <font>
@@ -106,7 +106,7 @@
             <TableView fx:id="studentsTableView" VBox.vgrow="ALWAYS">
               <columns>
                 <TableColumn fx:id="nameCollumn" prefWidth="75.0" text="Nome" />
-                <TableColumn fx:id="idCollumn" prefWidth="75.0" text="ID" />
+                <TableColumn fx:id="idCollumn" prefWidth="75.0" text="Matrícula" />
                   <TableColumn fx:id="inTimeCollumn" prefWidth="75.0" text="Entrada" />
                   <TableColumn fx:id="localeCollumn" prefWidth="75.0" text="Local" />
               </columns>
@@ -118,9 +118,9 @@
       </VBox>
    </center>
    <right>
-          <VBox alignment="CENTER" BorderPane.alignment="CENTER">
+          <VBox alignment="CENTER" minWidth="-Infinity" prefWidth="300.0" BorderPane.alignment="CENTER">
               <children>
-                  <Label text="Marcações">
+                  <Label text="Registro de marcações">
                       <font>
                           <Font name="System Bold" size="16.0" />
                       </font>
