@@ -1,10 +1,14 @@
-package com.ctrlclass.server.model;
+package com.ctrlassistant.server;
 
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 
 public abstract class Util {
     public final static DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+    public final static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy' às 'HH:mm:ss");
+
+    public final static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public static String formatDuration(Duration duration) {
         long seconds = duration.getSeconds();

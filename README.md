@@ -1,7 +1,7 @@
-# CtrlClassServer
+# CtrlAssistant Server
 
-JDK version: 10.0.1 (http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-Java Language Level: 10
-IDE: IntelliJ IDEA Ultimate 2018.1
+JDK version: 8.0.181
 
-AC326
+Java Language Level: 8
+
+IDE: IntelliJ IDEA Ultimate
