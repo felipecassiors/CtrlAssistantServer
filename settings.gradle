@@ -1,1 +1,6 @@
-rootProject.name = 'server'
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
+rootProject.name = 'class-assistant-server'
